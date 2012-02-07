@@ -11,4 +11,4 @@ Goals
 # Source: https://github.com/kasun/beesql
 
 from core import connection
-from exceptions import *
+from exceptions import BeeSQLError
