@@ -19,6 +19,10 @@ class MysqlConnection(BeeSQLBaseConnection):
             self.db_connection = pymysql.connect(user=username, passwd=password, host=host, port=port)
         else:
             self.db_connection = pymysql.connect(user=username, passwd=password, unix_socket=unix_socket)
-        self.cursor = self.db_connection.cursor()
+        self.cursor = self.db_connection.cursor(pymysql.cursors.DictCursor)
         if db and db != '':
             self.cursor.execute('use %s' % (db))
+
+    def close(self):
+        ''' Close connection to Databaes. '''
+        self.db_connection.close()

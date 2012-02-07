@@ -7,4 +7,8 @@
 
 class BeeSQLBaseConnection(object):
     ''' Base Abstract Database Connection. '''
-    pass
+   
+    def query(self, sql):
+        ''' Run provided query using implemented classes DB Cursor. ''' 
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
