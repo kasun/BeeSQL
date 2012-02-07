@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-''' Contains Mysql Database engine. '''
+''' Contains Mysql Database Connection. '''
 
 # Author: Kasun Herath <kasunh01@gmail.com>
 # Source: https://github.com/kasun/beesql
@@ -10,7 +10,7 @@ import pymysql
 from base import BeeSQLBaseConnection
 from beesql import BeeSQLError
 
-class MysqlConnection(BeeSQLBaseConnection):
+class MYSQLConnection(BeeSQLBaseConnection):
     ''' MySQL Database Connection. '''
     def __init__(self, username, password, host='localhost', port=3306, db=None, unix_socket=None):
         BeeSQLBaseConnection.__init__(self)

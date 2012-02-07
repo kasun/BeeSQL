@@ -21,7 +21,7 @@ def connection(engine='mysql', username=None, password=None, host='localhost', p
 
     try:
         mod = __import__('beesql.backends.%s' % (engine), fromlist=['beesql.backends'])
-        connection = getattr(mod, '%sConnection' % (engine.capitalize()))(username, password, host, port, db, unix_socket)
+        connection = getattr(mod, '%sConnection' % (engine.upper()))(username, password, host, port, db, unix_socket)
         return connection
     except ImportError:
         raise beesql.BeeSQLError('Invalid engine: %s' % (engine))
