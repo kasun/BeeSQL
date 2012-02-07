@@ -8,7 +8,10 @@
 class BeeSQLBaseConnection(object):
     ''' Base Abstract Database Connection. '''
    
-    def query(self, sql):
-        ''' Run provided query using implemented classes DB Cursor. ''' 
-        self.cursor.execute(sql)
+    def query(self, sql, escapes=None):
+        ''' Run provided query using implemented classes DB Cursor. Use Escape values if provided. ''' 
+        if not escapes:
+            self.cursor.execute(sql)
+        else:
+            self.cursor.execute(sql, escapes)
         return self.cursor.fetchall()
