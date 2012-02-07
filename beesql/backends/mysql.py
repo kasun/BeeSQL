@@ -13,6 +13,7 @@ from beesql import BeeSQLError
 class MysqlConnection(BeeSQLBaseConnection):
     ''' MySQL Database Connection. '''
     def __init__(self, username, password, host='localhost', port=3306, db=None, unix_socket=None):
+        BeeSQLBaseConnection.__init__(self)
         if (not username or password is None):
             raise BeeSQLError('Engine mysql requires username and password')
         if not unix_socket:
