@@ -8,7 +8,7 @@ Goals
     2. Allow for mapping between python datastructures and sql. '''
 
 # Author: Kasun Herath <kasunh01@gmail.com>
-# Source: https://github.com/kasun/beesql
+# Source: https://github.com/kasun/BeeSQL
 
 from core import connection
 

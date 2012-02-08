@@ -3,7 +3,7 @@
 ''' Contains Base Database Connection. '''
 
 # Author: Kasun Herath <kasunh01@gmail.com>
-# Source: https://github.com/kasun/beesql
+# Source: https://github.com/kasun/BeeSQL
 
 class BeeSQLBaseConnection(object):
     ''' Base Abstract Database Connection. '''
