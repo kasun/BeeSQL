@@ -8,4 +8,7 @@
 class BeeSQLError(Exception):
     ''' Base BeeSQL Error. '''
 
+class BeeSQLDatabaseError(Exception):
+    ''' Database operation related BeeSQL Error. '''
+
 
