@@ -40,6 +40,23 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def insert(self, table, **values):
+        ''' Insert values into table.
+        Arguments:
+            table: Table to be inserted into.
+            values: Dictionary of column names and values to be inserted. 
+
+        Examples:
+            SQL - INSERT INTO beesql_version (version, release_manager) VALUES ('0.1', 'Kasun Herath') 
+            BeeSQL insert - connection.insert('beesql_version', version='0.1', release_manager='Kasun Herath') '''
+
+        try:
+            sql = "INSERT INTO %s (%s) VALUES (%s)" % (table, ', '.join([columnname for columnname in values.keys()]), ', '.join(['%s' for columnname in values.values()]))
+            escapes = tuple(values.values())
+            return self.run_query(sql, escapes)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
     def close(self):
         ''' Close connection to Databaes. '''
         self.db_connection.close()
