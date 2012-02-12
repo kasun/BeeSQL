@@ -53,7 +53,30 @@ class MYSQLConnection(BeeSQLBaseConnection):
         try:
             sql = "INSERT INTO %s (%s) VALUES (%s)" % (table, ', '.join([columnname for columnname in values.keys()]), ', '.join(['%s' for columnname in values.values()]))
             escapes = tuple(values.values())
-            return self.run_query(sql, escapes)
+            self.run_query(sql, escapes)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
+    def use(self, db):
+        ''' Issue a mysql use command against the provided database. '''
+        try:
+            sql = "USE %s" % (db)
+            self.run_query(sql)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
+    def drop(self, db, if_exists=False):
+        ''' Drop provided database.
+        Arguments:
+            db: Database to be dropped.
+            if_exists: Try dropping the database only if it exists, used to prevent errors if database does not exist. '''
+        try:
+            sql = "DROP DATABASE %s" % (db)
+            if if_exists:
+                sql = "DROP DATABASE IF EXISTS %s" % (db)
+            else:
+                sql = "DROP DATABASE %s" % (db)
+            self.run_query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
