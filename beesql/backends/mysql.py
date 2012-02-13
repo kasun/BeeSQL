@@ -65,13 +65,26 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def create(self, db, if_not_exists=False):
+        ''' Create provided database.
+        Arguments:
+            db: Database to be created.
+            if_not_exists: Try creating the database only if it does not exist, used to prevent errors if database does exist. '''
+        try:
+            if if_not_exists:
+                sql = "CREATE DATABASE IF NOT EXISTS %s" % (db)
+            else:
+                sql = "CREATE DATABASE %s" % (db)
+            self.run_query(sql)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
     def drop(self, db, if_exists=False):
         ''' Drop provided database.
         Arguments:
             db: Database to be dropped.
             if_exists: Try dropping the database only if it exists, used to prevent errors if database does not exist. '''
         try:
-            sql = "DROP DATABASE %s" % (db)
             if if_exists:
                 sql = "DROP DATABASE IF EXISTS %s" % (db)
             else:
