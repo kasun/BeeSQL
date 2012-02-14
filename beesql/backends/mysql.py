@@ -57,6 +57,22 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def drop_table(self, *tables, **kargs):
+        ''' Drop tables provided.
+        Arguments:
+            if_exists: Try dropping tables only if exists, used to prevent errors if a table does not exist.
+            tables: Tuple of tables to be deleted. '''
+        if 'if_exists' in kargs and kargs['if_exists']:
+            sql = "DROP TABLE IF EXISTS "
+        else:
+            sql = "DROP TABLE "
+        sql = sql + ", ".join(list(tables))
+        try:
+            self.run_query(sql)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+            
+
     def use(self, db):
         ''' Issue a mysql use command against the provided database. '''
         try:

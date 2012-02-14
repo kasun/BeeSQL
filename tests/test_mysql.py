@@ -23,6 +23,18 @@ class TestMysqlConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "INSERT INTO beesql_version (version, name) VALUES (%s, %s)".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], ('0.1', 'Kasun Herath'))
 
+    def test_droptable(self):
+        ''' Drop table method should generate valid sql for single and multiple tables. '''
+        self.db.run_query = mock.Mock()
+        self.db.drop_table('beesql_version')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE beesql_version".lower())
+
+        self.db.drop_table('beesql_version', if_exists=True)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE IF EXISTS beesql_version".lower())
+
+        self.db.drop_table('beesql_version', 'beesql_downloads')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE beesql_version, beesql_downloads".lower())
+
     def test_use(self):
         ''' use method should generate valid sql. '''
         self.db.run_query = mock.Mock()
