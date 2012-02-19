@@ -15,6 +15,30 @@ class TestMysqlConnection(unittest.TestCase):
     def setUp(self):
         self.db = beesql.connection(username='root', password='thinkcube')
 
+    def test_select(self):
+        ''' Mysql select method should generate valid sql. '''
+        self.db.run_query = mock.Mock()
+
+        self.db.select('beesql_version')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT * FROM beesql_version".lower())
+
+        self.db.select('beesql_version', ('version', 'release_manager'))
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT version, release_manager FROM beesql_version".lower())
+
+        self.db.select('beesql_version', release_year=2012, release_manager='John Doe')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT * FROM beesql_version WHERE release_manager=%s AND release_year=%s".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe', 2012))
+
+        self.db.select('beesql_version', 'release_name', where="release_year=2012 AND release_manager='John Doe'")
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT release_name FROM beesql_version WHERE release_year=2012 AND release_manager='John Doe'".lower())
+
+        self.db.select('beesql_version', ('version', 'release_name'), release_manager='John Doe')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT version, release_name FROM beesql_version WHERE release_manager=%s".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe',))
+
+        self.db.select('beesql_version', 'SUM(billed_hours)', where='release_year > 2010', group_by='release_manager', having='SUM(billed_hours) > 100')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT SUM(billed_hours) FROM beesql_version WHERE release_year > 2010 GROUP BY release_manager HAVING SUM(billed_hours) > 100".lower())
+
     def test_insert(self):
         ''' Insert method should generate valid sql '''
         self.db.run_query = mock.Mock()

@@ -40,6 +40,72 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def select(self, table, columns=None, where=None, group_by=None, group_by_asc=True, having=None, 
+                order_by=None, order_by_asc=True, limit=False, **where_conditions):
+        ''' Select columns from table.
+        Arguments:
+            table: Table to select from.
+            columns: Tuple of columns or single column name to select. If not provided all columns are selected.
+            where: Optional where conditional clause as a string.
+            group_by: Optional column name to group results.
+            group_by_asc: Default to True to Group columns in ascending order. 
+            having: Having clause as a string.
+            order_by: Optional, used to sort results using column(s).
+            order_by_asc: Default to True to order results in ascending order.
+            limit: Limit results to provided number of rows.
+            where_conditions: Optional, condition pairs to contruct where conditional clause
+                                if where is not provided. 
+
+        Examples:
+            connection.select('beesql_version', ('version', 'release_manager'))
+            sql - SELECT version, release_manager FROM beesql_version
+
+            connection.select('beesql_version', where="version > 2.0 AND release_manager='John Doe'")
+            sql - SELECT * FROM beesql_version WHERE version > 2.0 AND release_manager='John Doe'
+
+            connection.select('beesql_version', release_year=2012, release_manager='John Doe')
+            sql - SELECT * FROM beesql_version WHERE release_year=2012 AND release_manager='John Doe' '''
+        sql = 'SELECT '
+        escapes= None
+        if columns:
+            # Columns is either a tuple of columns or single column name
+            if type(columns) is tuple:
+                sql = sql + ', '.join([column for column in columns]) 
+            else:
+                sql = sql + columns
+        else:
+            sql = sql + '*'
+        sql = sql + ' FROM %s' % (table)
+        if where:
+            sql = sql + ' WHERE %s' % (where)
+        elif where_conditions:
+            sql = sql + ' WHERE ' + ' AND '.join([k + '=%s' for k in where_conditions.keys()])
+            escapes = tuple(where_conditions.values())
+        if group_by:
+            sql = sql + ' GROUP BY '
+            if type(group_by) is tuple:
+                sql = sql + ','.join(group_by_column for group_by_column in group_by)
+            else:
+                sql = sql +  '%s' % (group_by)
+            if not group_by_asc:
+                sql = sql + ' DESC'
+        if having:
+            sql = sql + ' HAVING %s' % (having)
+        if order_by:
+            sql = sql + ' ORDER BY '
+            if type(order_by) is tuple:
+                sql = sql + ','.join(order_by_column for order_by_column in order_by)
+            else:
+                sql = sql +  '%s' % (order_by)
+            if not order_by_asc:
+                sql = sql + ' DESC'
+        if limit:
+            sql = sql + ' LIMIT %s' % (limit)
+        try:
+            return self.run_query(sql, (escapes))
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
     def insert(self, table, **values):
         ''' Insert values into table.
         Arguments:
