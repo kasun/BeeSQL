@@ -23,6 +23,12 @@ class TestMysqlConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "INSERT INTO beesql_version (version, name) VALUES (%s, %s)".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], ('0.1', 'Kasun Herath'))
 
+    def test_truncatetable(self):
+        ''' Truncate should generate valid sql. '''
+        self.db.run_query = mock.Mock()
+        self.db.truncate('beesql_version')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "TRUNCATE TABLE beesql_version".lower())
+
     def test_droptable(self):
         ''' Drop table method should generate valid sql for single and multiple tables. '''
         self.db.run_query = mock.Mock()

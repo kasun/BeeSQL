@@ -57,6 +57,13 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def truncate(self, table):
+        ''' Empty provided table. '''
+        sql = 'TRUNCATE TABLE %s' % (table)
+        try:
+            self.run_query(sql)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
     def drop_table(self, *tables, **kargs):
         ''' Drop tables provided.
         Arguments:
