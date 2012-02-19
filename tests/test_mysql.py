@@ -23,6 +23,22 @@ class TestMysqlConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "INSERT INTO beesql_version (version, name) VALUES (%s, %s)".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], ('0.1', 'Kasun Herath'))
 
+    def test_update(self):
+        ''' Mysql update should generate valid sql for both, string where condition clause 
+            and conditional clause as a set of values. '''
+        self.db.run_query = mock.Mock()
+        updates = {'release_manager':'John Doe'}
+
+        self.db.update('beesql_version', updates, where="release_manager='John Smith' AND version > 2.0")
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), 
+             "UPDATE beesql_version SET release_manager=%s WHERE release_manager='John Smith' AND version > 2.0".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe',))
+
+        self.db.update('beesql_version', updates, release_manager='John Smith', release_year=2012, limit=1)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), 
+             "UPDATE beesql_version SET release_manager=%s WHERE release_manager=%s AND release_year=%s LIMIT 1".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe', 'John Smith', 2012))
+
     def test_delete(self):
         ''' Mysql delete should generate valid sql for when where condition is provided
             as a string as well as condition pairs. '''

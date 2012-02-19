@@ -57,6 +57,41 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def update(self, table, updated_values, where=None, limit=None, **where_conditions):
+        ''' Update table with provided updated values.
+        Arguments:
+            table: Table to be updated.
+            updated_values: A dictionary representing values to be updated.
+            where: Optional, where condition as a string.
+            limit: Optional, used to limit the number of rows to be updated.
+            where_conditions: Optional, condition pairs to contruct where conditional clause
+                              if where is not provided. 
+
+        Examples:
+            updates = {'release_manager':'John Doe'}
+
+            connection.update('beesql_version', updates, where="release_manager='John Smith' AND version > 2.0")
+            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith AND version > 2.0'
+
+            connection.update('beesql_version', updates, release_manager='John Smith', release_year=2012, limit=1)
+            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith' AND release_year=2012 LIMIT 1
+            '''
+        if not type(updated_values) is dict:
+            raise TypeError('updated_values should be of type dict')
+        sql = 'UPDATE %s SET ' % (table) + ' , '.join([k + '=%s' for k in updated_values.keys()])
+        escapes_list = updated_values.values()
+        if where:
+            sql = sql + ' WHERE %s' % (where)
+        elif where_conditions:
+            sql = sql + ' WHERE ' + ' AND '.join([k + '=%s' for k in where_conditions.keys()])
+            escapes_list.extend(where_conditions.values())
+        if limit:
+            sql = sql + ' LIMIT %s' % (limit)
+        try:
+            self.run_query(sql, tuple(escapes_list))
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
     def delete(self, table, where=None, limit=None, **where_conditions):
         ''' Delete values from table.
         Arguments:
