@@ -46,13 +46,42 @@ class MYSQLConnection(BeeSQLBaseConnection):
             table: Table to be inserted into.
             values: Dictionary of column names and values to be inserted. 
 
-        Examples:
-            SQL - INSERT INTO beesql_version (version, release_manager) VALUES ('0.1', 'Kasun Herath') 
-            BeeSQL insert - connection.insert('beesql_version', version='0.1', release_manager='Kasun Herath') '''
+        Example:
+            BeeSQL insert - connection.insert('beesql_version', version='0.1', release_manager='Kasun Herath')
+            SQL - INSERT INTO beesql_version (version, release_manager) VALUES ('0.1', 'Kasun Herath') '''
 
         try:
             sql = "INSERT INTO %s (%s) VALUES (%s)" % (table, ', '.join([columnname for columnname in values.keys()]), ', '.join(['%s' for columnname in values.values()]))
             escapes = tuple(values.values())
+            self.run_query(sql, escapes)
+        except pymysql.err.DatabaseError, de:
+            raise BeeSQLDatabaseError(str(de))
+
+    def delete(self, table, where=None, limit=None, **where_conditions):
+        ''' Delete values from table.
+        Arguments:
+            table: Table to delete values from.
+            where: Optional, where condition as a string.
+            limit: Optional, places a limit on the number of rows to be deleted.
+            where_conditions: Optional, condition pairs to contruct where conditional clause
+                              if where is not provided.
+        Examples:
+            connection.delete('beesql_version', where="version < 2.0")
+            sql - DELETE FROM beesql_version WHERE version < 2.0
+
+            connection.delete('beesql_version', limit=2, version=2.0, release_name='bumblebee')
+            sql - DELETE FROM beesql_version WHERE version=2.0 and release_name='bumblebee' LIMIT 2 '''
+        escapes = None
+        sql = 'DELETE FROM %s' % (table)
+        if where:
+            sql = sql + ' WHERE %s' % (where)
+        # If where condition is not supplied as a string derive it using where_conditions.
+        elif where_conditions:
+            sql = sql + ' WHERE ' + ' AND '.join(['%s=%s' % (k, '%s') for k in where_conditions.keys()])
+            escapes = tuple(where_conditions.values())
+        if limit:
+            sql = sql + ' LIMIT %s' % (limit)
+        try:
             self.run_query(sql, escapes)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))

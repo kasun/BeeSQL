@@ -23,6 +23,18 @@ class TestMysqlConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "INSERT INTO beesql_version (version, name) VALUES (%s, %s)".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], ('0.1', 'Kasun Herath'))
 
+    def test_delete(self):
+        ''' Mysql delete should generate valid sql for when where condition is provided
+            as a string as well as condition pairs. '''
+        self.db.run_query = mock.Mock()
+
+        self.db.delete('beesql_version', where="version < 2.0")
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DELETE FROM beesql_version WHERE version < 2.0".lower())
+
+        self.db.delete('beesql_version', limit=2, version=2.0, release_name='bumblebee')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DELETE FROM beesql_version WHERE version=%s and release_name=%s LIMIT 2".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], (2.0, 'bumblebee'))
+
     def test_truncatetable(self):
         ''' Truncate should generate valid sql. '''
         self.db.run_query = mock.Mock()
