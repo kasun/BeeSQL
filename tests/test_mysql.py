@@ -22,6 +22,9 @@ class TestMysqlConnection(unittest.TestCase):
         self.db.select('beesql_version')
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT * FROM beesql_version".lower())
 
+        self.db.select('beesql_version', 'release_manager', distinct=True)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT DISTINCT release_manager FROM beesql_version".lower())
+
         self.db.select('beesql_version', ('version', 'release_manager'))
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SELECT version, release_manager FROM beesql_version".lower())
 

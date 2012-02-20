@@ -40,7 +40,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
-    def select(self, table, columns=None, where=None, group_by=None, group_by_asc=True, having=None, 
+    def select(self, table, columns=None, distinct=False, where=None, group_by=None, group_by_asc=True, having=None, 
                 order_by=None, order_by_asc=True, limit=False, **where_conditions):
         ''' Select columns from table.
         Arguments:
@@ -67,6 +67,8 @@ class MYSQLConnection(BeeSQLBaseConnection):
             sql - SELECT * FROM beesql_version WHERE release_year=2012 AND release_manager='John Doe' '''
         sql = 'SELECT '
         escapes= None
+        if distinct:
+            sql = sql + 'DISTINCT '
         if columns:
             # Columns is either a tuple of columns or single column name
             if type(columns) is tuple:
