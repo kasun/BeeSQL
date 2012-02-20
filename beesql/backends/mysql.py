@@ -36,6 +36,8 @@ class MYSQLConnection(BeeSQLBaseConnection):
             sql: Query to run.
             escapes: Optional, A tuple of escape values to escape provided sql. '''
         try:
+            self.last_sql = sql
+            self.last_escapes = escapes
             return self.run_query(sql, escapes)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
@@ -252,6 +254,16 @@ class MYSQLConnection(BeeSQLBaseConnection):
     def lastrowid(self):
         ''' Return row ID of last insert. '''
         return self.cursor.lastrowid
+
+    @property
+    def lastsql(self):
+        ''' Return last run sql statement. '''
+        return self.last_sql
+
+    @property
+    def lastescapes(self):
+        ''' Return lastly used escape values as a tuple. '''
+        return self.last_escapes
 
     def close(self):
         ''' Close connection to Databaes. '''
