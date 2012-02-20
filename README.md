@@ -1,4 +1,4 @@
-# BeeSQL - Python SQL wrapper #
+# BeeSQL - Pythonic SQL Library #
 ## Work in progress ##
 
 ## Requirements ##
