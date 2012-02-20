@@ -104,7 +104,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         if limit:
             sql = sql + ' LIMIT %s' % (limit)
         try:
-            return self.run_query(sql, (escapes))
+            return self.query(sql, (escapes))
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -121,7 +121,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         try:
             sql = "INSERT INTO %s (%s) VALUES (%s)" % (table, ', '.join([columnname for columnname in values.keys()]), ', '.join(['%s' for columnname in values.values()]))
             escapes = tuple(values.values())
-            self.run_query(sql, escapes)
+            self.query(sql, escapes)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -156,7 +156,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         if limit:
             sql = sql + ' LIMIT %s' % (limit)
         try:
-            self.run_query(sql, tuple(escapes_list))
+            self.query(sql, tuple(escapes_list))
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -185,7 +185,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         if limit:
             sql = sql + ' LIMIT %s' % (limit)
         try:
-            self.run_query(sql, escapes)
+            self.query(sql, escapes)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -193,7 +193,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         ''' Empty provided table. '''
         sql = 'TRUNCATE TABLE %s' % (table)
         try:
-            self.run_query(sql)
+            self.query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
     def drop_table(self, *tables, **kargs):
@@ -207,7 +207,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
             sql = "DROP TABLE "
         sql = sql + ", ".join(list(tables))
         try:
-            self.run_query(sql)
+            self.query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
             
@@ -216,7 +216,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         ''' Issue a mysql use command against the provided database. '''
         try:
             sql = "USE %s" % (db)
-            self.run_query(sql)
+            self.query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -230,7 +230,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
                 sql = "CREATE DATABASE IF NOT EXISTS %s" % (db)
             else:
                 sql = "CREATE DATABASE %s" % (db)
-            self.run_query(sql)
+            self.query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
@@ -244,7 +244,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
                 sql = "DROP DATABASE IF EXISTS %s" % (db)
             else:
                 sql = "DROP DATABASE %s" % (db)
-            self.run_query(sql)
+            self.query(sql)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
