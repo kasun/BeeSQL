@@ -248,6 +248,11 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    @property
+    def lastrowid(self):
+        ''' Return row ID of last insert. '''
+        return self.cursor.lastrowid
+
     def close(self):
         ''' Close connection to Databaes. '''
         self.db_connection.close()
