@@ -236,6 +236,11 @@ class MYSQLConnection(BeeSQLBaseConnection):
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
+    def tables(self):
+        ''' Return tables of database. '''
+        sql = 'SHOW TABLES'
+        return [tableinfo.values()[0] for tableinfo in self.query(sql)]
+
     def drop(self, db, if_exists=False):
         ''' Drop provided database.
         Arguments:

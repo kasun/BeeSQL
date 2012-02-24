@@ -114,6 +114,12 @@ class TestMysqlConnection(unittest.TestCase):
         self.db.create('beesql_version', if_not_exists=False)
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "CREATE DATABASE beesql_version".lower())
 
+    def test_tables(self):
+        ''' tables method should generate valid sql. '''
+        self.db.run_query = mock.Mock()
+        self.db.tables()
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SHOW TABLES".lower())
+
     def test_drop(self):
         ''' Drop method should generate valid sql for both if_exists=False and if_exists=True. '''
         self.db.run_query = mock.Mock()
