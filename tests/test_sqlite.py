@@ -15,6 +15,20 @@ class TestSQLiteConnection(unittest.TestCase):
     def setUp(self):
         self.db = beesql.connection(engine='sqlite', db=':memory:')
 
+    def test_get(self):
+        ''' Get should retrieve only one row if where condition match or else None. '''
+        self.db.query("""CREATE TABLE beesql_version(
+        id INTEGER PRIMARY_KEY,
+        version VARCHAR(10),
+        release_manager VARCHAR(100))""")
+        self.db.insert('beesql_version', id=1, version='0.1.1', release_manager='John Doe')
+
+        result = self.db.get('beesql_version', version='0.1.1')
+        self.assertEqual(result['release_manager'], 'John Doe')
+
+        result = self.db.get('beesql_version', version='0.1.2')
+        self.assertIsNone(result)
+
     def test_select(self):
         ''' Select method should generate valid sql. '''
         self.db.run_query = mock.Mock()

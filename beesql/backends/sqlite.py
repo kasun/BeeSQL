@@ -44,6 +44,26 @@ class SQLITEConnection(BeeSQLBaseConnection):
         except sqlite3.OperationalError, oe:
             raise BeeSQLDatabaseError(str(oe))
 
+    def get(self, table, where=None, **where_conditions):
+        ''' Retrieve a single row.
+        Arguments:
+            table: Table to retrieve from.
+            where: Optional where conditional clause as a string.
+            where_conditions: Optional, condition pairs to contruct where conditional clause.
+                                if where is not provided. '''
+        sql = 'SELECT * FROM %s' % table
+        escapes= None
+        if where:
+            sql = sql + ' WHERE %s' % where
+        elif where_conditions:
+            sql = sql + ' WHERE ' + ' AND '.join([k + '=?' for k in where_conditions.keys()])
+            escapes = tuple(where_conditions.values())
+        sql = sql + ' LIMIT 1'
+        result = self.query(sql, escapes)
+        if result:
+            return result[0]
+        return None
+
     def select(self, table, columns=None, distinct=False, where=None, group_by=None, having=None,
                 order_by=None, order_by_asc=True, limit=False, **where_conditions):
         ''' Select columns from table.
