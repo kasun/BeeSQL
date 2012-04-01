@@ -38,6 +38,8 @@ class SQLITEConnection(BeeSQLBaseConnection):
             sql: Query to run.
             escapes: Optional, A tuple of escape values to escape provided sql. '''
         try:
+            self.last_sql = sql
+            self.last_escapes = escapes
             return self.run_query(sql, escapes)
         except sqlite3.OperationalError, oe:
             raise BeeSQLDatabaseError(str(oe))
@@ -187,6 +189,21 @@ class SQLITEConnection(BeeSQLBaseConnection):
             sql = "DROP TABLE "
         sql = sql + table
         self.query(sql)
+
+    @property
+    def lastrowid(self):
+        ''' Return row ID of last insert. '''
+        return self.cursor.lastrowid
+
+    @property
+    def lastsql(self):
+        ''' Return last run sql statement. '''
+        return self.last_sql
+
+    @property
+    def lastescapes(self):
+        ''' Return lastly used escape values as a tuple. '''
+        return self.last_escapes
 
     def close(self):
         ''' Close connection to Databaes. '''

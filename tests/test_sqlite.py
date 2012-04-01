@@ -83,6 +83,20 @@ class TestSQLiteConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DELETE FROM beesql_version WHERE version=? and release_name=?".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], (2.0, 'bumblebee'))
 
+    def test_transaction(self):
+        ''' When in a transaction auto commit should be false. '''
+        self.db.query("""CREATE TABLE beesql_version(
+        id INTEGER PRIMARY_KEY,
+        version VARCHAR(10),
+        release_manager VARCHAR(100))""")
+        self.db.insert('beesql_version', id=1, version='0.1.1', release_manager='John Doe')
+        self.db.transaction_on()
+        updates = {'release_manager': 'John Smith'}
+        self.db.update('beesql_version', updates, release_manager='John Doe')
+        self.db.rollback()
+        row = self.db.select('beesql_version', where="id=1")[0]
+        self.assertNotEqual(row['release_manager'], updates['release_manager'])
+
     def test_tables(self):
         ''' tables should return tables of current database as a list. '''
         self.db.query("""CREATE TABLE beesql_version(
@@ -100,6 +114,25 @@ class TestSQLiteConnection(unittest.TestCase):
 
         self.db.drop_table('beesql_version', if_exists=True)
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE IF EXISTS beesql_version".lower())
+
+    def test_lastrowid(self):
+        ''' Attribute lastrowid should be equal to last row id of insert statement. '''
+        self.db.query("""CREATE TABLE beesql_version(
+        id INTEGER PRIMARY_KEY,
+        version VARCHAR(10),
+        release_manager VARCHAR(100))""")
+        self.db.insert('beesql_version', id=1, version='0.1.1', release_manager='John Doe')
+        self.assertEqual(self.db.lastrowid, 1)
+
+    def test_lastsqlandescapes(self):
+        ''' Attributes lastsql and lastescapes should be equal to lastly run sql and escapes used. '''
+        self.db.query("""CREATE TABLE beesql_version(
+        id INTEGER PRIMARY_KEY,
+        version VARCHAR(10),
+        release_manager VARCHAR(100))""")
+        self.db.insert('beesql_version', id=1, version='0.1.1', release_manager='John Doe')
+        self.assertEqual(self.db.lastsql.lower(), 'INSERT INTO beesql_version (release_manager, version, id) VALUES (?, ?, ?)'.lower())
+        self.assertEqual(self.db.lastescapes, ('John Doe', '0.1.1', 1))
 
     def tearDown(self):
         self.db.close()
