@@ -16,7 +16,7 @@ class TestSQLiteConnection(unittest.TestCase):
         self.db = beesql.connection(engine='sqlite', db=':memory:')
 
     def test_select(self):
-        ''' Mysql select method should generate valid sql. '''
+        ''' Select method should generate valid sql. '''
         self.db.run_query = mock.Mock()
 
         self.db.select('beesql_version')
@@ -50,8 +50,29 @@ class TestSQLiteConnection(unittest.TestCase):
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "INSERT INTO beesql_version (version, name) VALUES (?, ?)".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], ('0.1', 'Kasun Herath'))
 
+    def test_update(self):
+        ''' Update should generate valid sql for instances when no where condition is provided,
+            when it is provided as a string or as a set of values. '''
+        self.db.run_query = mock.Mock()
+        updates = {'release_manager':'John Doe'}
+
+        self.db.update('beesql_version', updates)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), 
+             "UPDATE beesql_version SET release_manager=?".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe',))
+
+        self.db.update('beesql_version', updates, where="release_manager='John Smith' AND version > 2.0")
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), 
+             "UPDATE beesql_version SET release_manager=? WHERE release_manager='John Smith' AND version > 2.0".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe',))
+
+        self.db.update('beesql_version', updates, release_manager='John Smith', release_year=2012)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), 
+             "UPDATE beesql_version SET release_manager=? WHERE release_manager=? AND release_year=?".lower())
+        self.assertEqual(self.db.run_query.call_args[0][1], ('John Doe', 'John Smith', 2012))
+
     def test_delete(self):
-        ''' Mysql delete should generate valid sql for when where condition is provided
+        ''' Delete should generate valid sql for when where condition is provided
             as a string as well as condition pairs. '''
         self.db.run_query = mock.Mock()
 
@@ -61,6 +82,27 @@ class TestSQLiteConnection(unittest.TestCase):
         self.db.delete('beesql_version', version=2.0, release_name='bumblebee')
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DELETE FROM beesql_version WHERE version=? and release_name=?".lower())
         self.assertEqual(self.db.run_query.call_args[0][1], (2.0, 'bumblebee'))
+
+    def test_tables(self):
+        ''' tables should return tables of current database as a list. '''
+        self.db.query("""CREATE TABLE beesql_version(
+        id INTEGER PRIMARY_KEY,
+        version VARCHAR(10),
+        release_manager VARCHAR(100))""")
+        tables = self.db.tables()
+        self.assertEqual(tables, ['beesql_version'])
+
+    def test_droptable(self):
+        ''' Drop table method should generate valid sql. '''
+        self.db.run_query = mock.Mock()
+        self.db.drop_table('beesql_version')
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE beesql_version".lower())
+
+        self.db.drop_table('beesql_version', if_exists=True)
+        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "DROP TABLE IF EXISTS beesql_version".lower())
+
+    def tearDown(self):
+        self.db.close()
 
 if __name__ == '__main__':
     unittest.main()

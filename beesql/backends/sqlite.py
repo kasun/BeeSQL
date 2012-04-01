@@ -118,6 +118,35 @@ class SQLITEConnection(BeeSQLBaseConnection):
         escapes = tuple(values.values())
         self.query(sql, escapes)
 
+    def update(self, table, updated_values, where=None, **where_conditions):
+        ''' Update table with provided updated values.
+        Arguments:
+            table: Table to be updated.
+            updated_values: A dictionary representing values to be updated.
+            where: Optional, where condition as a string.
+            where_conditions: Optional, condition pairs to contruct where conditional clause
+                              if where is not provided. 
+
+        Examples:
+            updates = {'release_manager':'John Doe'}
+
+            connection.update('beesql_version', updates, where="release_manager='John Smith' AND version > 2.0")
+            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith AND version > 2.0'
+
+            connection.update('beesql_version', updates, release_manager='John Smith', release_year=2012)
+            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith' AND release_year=2012
+            '''
+        if not type(updated_values) is dict:
+            raise TypeError('updated_values should be of type dict')
+        sql = 'UPDATE %s SET ' % (table) + ' , '.join([k + '=?' for k in updated_values.keys()])
+        escapes_list = updated_values.values()
+        if where:
+            sql = sql + ' WHERE %s' % (where)
+        elif where_conditions:
+            sql = sql + ' WHERE ' + ' AND '.join([k + '=?' for k in where_conditions.keys()])
+            escapes_list.extend(where_conditions.values())
+        self.query(sql, tuple(escapes_list))
+
     def delete(self, table, where=None, **where_conditions):
         ''' Delete values from table.
         Arguments:
@@ -140,6 +169,24 @@ class SQLITEConnection(BeeSQLBaseConnection):
             sql = sql + ' WHERE ' + ' AND '.join(['%s=%s' % (k, '?') for k in where_conditions.keys()])
             escapes = tuple(where_conditions.values())
         self.query(sql, escapes)
+
+    def tables(self):
+        ''' Return list of tables in current database. '''
+        sql = "select name from sqlite_master where type = 'table'"
+        table_dicts = self.query(sql)
+        return [table_dict['name'] for table_dict in table_dicts]
+
+    def drop_table(self, table, **kargs):
+        ''' Drop tables provided.
+        Arguments:
+            if_exists: Try dropping tables only if exists, used to prevent errors if a table does not exist.
+            table: Table to be deleted. '''
+        if 'if_exists' in kargs and kargs['if_exists']:
+            sql = "DROP TABLE IF EXISTS "
+        else:
+            sql = "DROP TABLE "
+        sql = sql + table
+        self.query(sql)
 
     def close(self):
         ''' Close connection to Databaes. '''
