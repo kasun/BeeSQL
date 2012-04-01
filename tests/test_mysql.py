@@ -10,10 +10,13 @@ import mock
 
 import beesql
 
+import settings
+
+
 class TestMysqlConnection(unittest.TestCase):
 
     def setUp(self):
-        self.db = beesql.connection(username='root', password='thinkcube')
+        self.db = beesql.connection(username=settings.MYSQL_USER, password=settings.MYSQL_PASSWD)
 
     def test_select(self):
         ''' Mysql select method should generate valid sql. '''
@@ -113,12 +116,6 @@ class TestMysqlConnection(unittest.TestCase):
 
         self.db.create('beesql_version', if_not_exists=False)
         self.assertEqual(self.db.run_query.call_args[0][0].lower(), "CREATE DATABASE beesql_version".lower())
-
-    def test_tables(self):
-        ''' tables method should generate valid sql. '''
-        self.db.run_query = mock.Mock()
-        self.db.tables()
-        self.assertEqual(self.db.run_query.call_args[0][0].lower(), "SHOW TABLES".lower())
 
     def test_drop(self):
         ''' Drop method should generate valid sql for both if_exists=False and if_exists=True. '''
