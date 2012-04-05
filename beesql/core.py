@@ -8,16 +8,22 @@
 import beesql
 
 def connection(engine='mysql', username=None, password=None, host='localhost', port=3306, db=None, unix_socket=None):
-    ''' 
-    Create and return a connection to a Database using specified engine.
+    ''' Create and return a connection to a Database using specified engine.
+
     Arguments:
-        engine: Database to use; Default to mysql. 
-        username: Username used to connect to Database; Not used with sqlite.
-        password: Password used to connect to Database; Not used with sqlite.
-        host: Host of Database; Default to localhost, Not used with sqlite.
-        port: port to connect to Database; Default to 3306, Not used with sqlite.
-        db: Database name; Optional, if engine is sqlite a filename is expected.
-        unix_socket: Used to connect to the Database through a unix socket; Optional, not used with sqlite. '''
+        :engine: Database to use; Default to mysql. 
+        :username: Username used to connect to Database; Not used with sqlite.
+        :password: Password used to connect to Database; Not used with sqlite.
+        :host: Host of Database; Default to localhost, Not used with sqlite.
+        :port: port to connect to Database; Default to 3306, Not used with sqlite.
+        :db: Database name; Optional, if engine is sqlite a filename is expected.
+        :unix_socket: Used to connect to the Database through a unix socket; Optional, not used with sqlite. 
+
+    Returns:
+        Instance of BeeSQLDatabase Connection.
+
+    Raises:
+        beesql.BeeSQLError. '''
 
     try:
         mod = __import__('beesql.backends.%s' % (engine), fromlist=['beesql.backends'])
@@ -27,4 +33,3 @@ def connection(engine='mysql', username=None, password=None, host='localhost', p
         raise beesql.BeeSQLError('Invalid engine: %s' % (engine))
     except AttributeError:
         raise beesql.BeeSQLError('Invalid engine: %s' % (engine))
-

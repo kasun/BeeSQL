@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quick Start &mdash; BeeSQL 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="BeeSQL 0.1 documentation" href="../index.html" />
+    <link rel="next" title="API" href="../api.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">BeeSQL 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="quick-start">
+<span id="install"></span><h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Current supported engines are <tt class="docutils literal"><span class="pre">mysql</span></tt> and <tt class="docutils literal"><span class="pre">sqlite</span></tt>.</p>
+</div>
+<div class="section" id="common-operations">
+<h2>Common operations<a class="headerlink" href="#common-operations" title="Permalink to this headline">¶</a></h2>
+<p><strong>Importing beesql</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">beesql</span>
+</pre></div>
+</div>
+<p><strong>Creating a database connection</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">beesql</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s">&#39;engine&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s">&#39;user&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">&#39;pass&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s">&#39;database&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The engine should be one of supported engines, it defaults to <tt class="docutils literal"><span class="pre">mysql</span></tt>. For MySQL username and password should be provided and database can be provided with <tt class="docutils literal"><span class="pre">db</span></tt>. For SQLite only <tt class="docutils literal"><span class="pre">db</span></tt> should be provided and it should be the filepath to the database file or special value <tt class="docutils literal"><span class="pre">:memory:</span></tt> to create the database in memory.</p>
+<blockquote>
+<div><ul class="simple">
+<li><tt class="docutils literal"><span class="pre">db</span> <span class="pre">=</span> <span class="pre">beesql.connection(username='root',</span> <span class="pre">password='rootpass',</span> <span class="pre">db='beesql')</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">db</span> <span class="pre">=</span> <span class="pre">beesql.connection(engine='sqlite',</span> <span class="pre">db='beesql.db')</span></tt></li>
+</ul>
+</div></blockquote>
+<p>The first statement Would return a mysql connection connected to database <tt class="docutils literal"><span class="pre">beesql</span></tt> using username <tt class="docutils literal"><span class="pre">root</span></tt> and password <tt class="docutils literal"><span class="pre">rootpass</span></tt> while the second statement would return a sqlite connection using <tt class="docutils literal"><span class="pre">beesql.db</span></tt> as the database file. For a list of all available options have a refer the API.</p>
+<p><strong>Executing a SQL statement</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">versions</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;SELECT * from beesql_version&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above statement would return a tuple of dictionaries representing rows. Columns should be accessed using column names:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">version</span><span class="p">[</span><span class="s">&#39;release_manager&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">query()</span></tt> commits the SQL statement automatically.</p>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">query()</span></tt> also accepts an optional tuple of escape values used to escape SQL statements.
+MySQL example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;UPDATE beesql_version SET release_name = </span><span class="si">%s</span><span class="s"> WHERE ID = </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;bumblebee&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>SQLite example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s">&#39;UPDATE beesql_version SET release_name = ? WHERE ID = ?&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;bumblebee&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Executing a transaction</strong>:</p>
+<div class="highlight-python"><pre>db.transaction_on()
+error = False
+for sql in sql_statements:
+    try:
+        db.query(sql)
+    except beesql.exceptions.BeeSQLDatabaseError
+        error = True
+        db.rollback()
+        break
+if not error:
+    db.commit()
+db.transaction_off()</pre>
+</div>
+<p><strong>Listing tables of currently used database</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tables</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">tables</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Select statement</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">versions</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;beesql_version&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="s">&#39;release_date&#39;</span><span class="p">,</span> <span class="n">release_manager</span><span class="o">=</span><span class="s">&#39;John Doe&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above would return all rows with columns <tt class="docutils literal"><span class="pre">version</span></tt> and <tt class="docutils literal"><span class="pre">release_date</span></tt> where release_manager is <tt class="docutils literal"><span class="pre">John</span> <span class="pre">Doe</span></tt></p>
+<p>For all options <tt class="xref py py-func docutils literal"><span class="pre">select()</span></tt> supports refer the API.</p>
+<p><strong>Retrieve a single row</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">row</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;beesql_version&#39;</span><span class="p">,</span> <span class="n">release_manager</span><span class="o">=</span><span class="s">&#39;John Doe&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above would retrieve a single row from <tt class="docutils literal"><span class="pre">beesql_version</span></tt> where <tt class="docutils literal"><span class="pre">release_manager</span></tt> is <tt class="docutils literal"><span class="pre">John</span> <span class="pre">Doe</span></tt>. Alternatively the where condition can be supplied as a string:</p>
+<div class="highlight-python"><pre>row = db.get(''beesql_version', where="release_manager='John Doe'")</pre>
+</div>
+<p><strong>Insert statement</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">&#39;beesql_version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s">&#39;0.1&#39;</span><span class="p">,</span> <span class="n">release_manager</span><span class="o">=</span><span class="s">&#39;John Doe&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above would insert a row into <tt class="docutils literal"><span class="pre">beesql_version</span></tt> with <tt class="docutils literal"><span class="pre">0.1</span></tt> as <tt class="docutils literal"><span class="pre">version`</span></tt> and <tt class="docutils literal"><span class="pre">John</span> <span class="pre">Doe</span></tt> as <tt class="docutils literal"><span class="pre">release_manager</span></tt>.</p>
+<p><strong>Update statement</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">updated_values</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;release_manager&#39;</span><span class="p">:</span> <span class="s">&#39;John Smith&#39;</span><span class="p">}</span>
+<span class="n">db</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;beesql_version&#39;</span><span class="p">,</span> <span class="n">updated_values</span><span class="p">,</span> <span class="n">release_manager</span><span class="o">=</span><span class="s">&#39;John Doe&#39;</span><span class="p">,</span> <span class="n">release_year</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The SQL equivalent of above statement is <tt class="docutils literal"><span class="pre">UPDATE</span> <span class="pre">beesql_version</span> <span class="pre">SET</span> <span class="pre">release_manager='John</span> <span class="pre">Smith'</span> <span class="pre">WHERE</span> <span class="pre">release_manager='John</span> <span class="pre">Doe'</span> <span class="pre">AND</span> <span class="pre">release_year=2012</span></tt>. Alternatively the where condition can be supplied as a string. For all option which <tt class="xref py py-func docutils literal"><span class="pre">update()</span></tt> support refer the API.</p>
+<p><strong>Delete statement</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s">&#39;beesql_version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">release_name</span><span class="o">=</span><span class="s">&#39;bumblebee&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The SQL equivalent of above statement is <tt class="docutils literal"><span class="pre">DELETE</span> <span class="pre">FROM</span> <span class="pre">beesql_version</span> <span class="pre">WHERE</span> <span class="pre">version=2.0</span> <span class="pre">AND</span> <span class="pre">release_name='bumblebee'</span></tt>. Alternatively the where condition can be provided as a string. For all option which <tt class="xref py py-func docutils literal"><span class="pre">delete()</span></tt> support refer the API.</p>
+<p><strong>Closing a connection</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Attributes of connections</strong>:</p>
+<div class="highlight-python"><pre>db.lastrowid - Insert ID of last statment if last statement was an insert.
+db.lastsql - Generated SQL for last run statement.
+db.lastescapes - Escape values used for last run statement.</pre>
+</div>
+</div>
+<div class="section" id="mysql-operations">
+<h2>MySQL operations<a class="headerlink" href="#mysql-operations" title="Permalink to this headline">¶</a></h2>
+<p>MySQL connections additionally support following functions.</p>
+<p><strong>Truncate</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="s">&#39;tablename&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Drop tables</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">drop_table</span><span class="p">(</span><span class="s">&#39;table1&#39;</span><span class="p">,</span> <span class="s">&#39;table2&#39;</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>MySQL <tt class="xref py py-func docutils literal"><span class="pre">drop_table()</span></tt> accepts a variable number of tables to be dropped.</p>
+<p><strong>Use a database</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&#39;database_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Create a database</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;database_name&#39;</span><span class="p">,</span>  <span class="n">if_not_exists</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Drop database</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s">&#39;database_name&#39;</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sqlite-operations">
+<h2>SQLite Operations<a class="headerlink" href="#sqlite-operations" title="Permalink to this headline">¶</a></h2>
+<p>SQLite connections additionally support following functions.</p>
+<p><strong>Drop table</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">drop_table</span><span class="p">(</span><span class="s">&#39;table_name&#39;</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quick Start</a><ul>
+<li><a class="reference internal" href="#common-operations">Common operations</a></li>
+<li><a class="reference internal" href="#mysql-operations">MySQL operations</a></li>
+<li><a class="reference internal" href="#sqlite-operations">SQLite Operations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../api.html"
+                        title="next chapter">API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/user/quickstart.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../api.html" title="API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">BeeSQL 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Kasun Herath.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

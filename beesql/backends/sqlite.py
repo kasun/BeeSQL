@@ -33,10 +33,17 @@ class SQLITEConnection(BeeSQLBaseConnection):
         return d
 
     def query(self, sql, escapes=None):
-        ''' Run provided query.
+        """ Run provided query.
+
         Arguments:
-            sql: Query to run.
-            escapes: Optional, A tuple of escape values to escape provided sql. '''
+            :sql (str): Query to run.
+            :escapes: Optional, A tuple of escape values to escape provided sql.
+
+        Returns:
+            Tuple of dictionaries representing rows.
+
+        Raises:
+            BeeSQLDatabaseError. """
         try:
             self.last_sql = sql
             self.last_escapes = escapes
@@ -45,12 +52,20 @@ class SQLITEConnection(BeeSQLBaseConnection):
             raise BeeSQLDatabaseError(str(oe))
 
     def get(self, table, where=None, **where_conditions):
-        ''' Retrieve a single row.
+        """ Retrieve a single row.
+
         Arguments:
-            table: Table to retrieve from.
-            where: Optional where conditional clause as a string.
-            where_conditions: Optional, condition pairs to contruct where conditional clause.
-                                if where is not provided. '''
+            :table (str): Table to retrieve from.
+            :where: Optional where conditional clause as a string.
+            :where_conditions: Optional, condition pairs to contruct where conditional clause.
+                                if where is not provided.
+
+        Returns:
+            A dict representing a single Row.
+
+        Raises:
+            BeeSQLDatabaseError. """
+
         sql = 'SELECT * FROM %s' % table
         escapes= None
         if where:
@@ -66,20 +81,28 @@ class SQLITEConnection(BeeSQLBaseConnection):
 
     def select(self, table, columns=None, distinct=False, where=None, group_by=None, having=None,
                 order_by=None, order_by_asc=True, limit=False, **where_conditions):
-        ''' Select columns from table.
+        """ Select columns from table.
+
         Arguments:
-            table: Table to select from.
-            columns: Tuple of columns or single column name to select. If not provided all columns are selected.
-            where: Optional where conditional clause as a string.
-            group_by: Optional column name to group results.
-            having: Having clause as a string.
-            order_by: Optional, used to sort results using column(s).
-            order_by_asc: Default to True to order results in ascending order.
-            limit: Limit results to provided number of rows.
-            where_conditions: Optional, condition pairs to contruct where conditional clause
+            :table (str): Table to select from.
+            :columns: Tuple of columns or single column name to select. If not provided all columns are selected.
+            :where: Optional where conditional clause as a string.
+            :group_by (str): Optional column name to group results.
+            :having: Having clause as a string.
+            :order_by (tuple or str): Optional, used to sort results using column(s).
+            :order_by_asc (bool): Default to True to order results in ascending order.
+            :limit (int): Limit results to provided number of rows.
+            :where_conditions: Optional, condition pairs to contruct where conditional clause
                                 if where is not provided. 
 
-        Examples:
+        Returns:
+            Tuple of dicts representing rows.
+
+        Raises:
+            BeeSQLDatabaseError.
+
+        Examples::
+
             connection.select('beesql_version', ('version', 'release_manager'))
             sql - SELECT version, release_manager FROM beesql_version
 
@@ -87,7 +110,8 @@ class SQLITEConnection(BeeSQLBaseConnection):
             sql - SELECT * FROM beesql_version WHERE version > 2.0 AND release_manager='John Doe'
 
             connection.select('beesql_version', release_year=2012, release_manager='John Doe')
-            sql - SELECT * FROM beesql_version WHERE release_year=2012 AND release_manager='John Doe' '''
+            sql - SELECT * FROM beesql_version WHERE release_year=2012 AND release_manager='John Doe' """
+
         sql = 'SELECT '
         escapes= None
         if distinct:
@@ -127,37 +151,47 @@ class SQLITEConnection(BeeSQLBaseConnection):
         return self.query(sql, (escapes))
 
     def insert(self, table, **values):
-        ''' Insert values into table.
-        Arguments:
-            table: Table to be inserted into.
-            values: Dictionary of column names and values to be inserted. 
+        """ Insert values into table.
 
-        Example:
+        Arguments:
+            :table (str): Table to be inserted into.
+            :values: variable number of column names and values to be inserted. 
+
+        Raises:
+            BeeSQLDatabaseError.
+
+        Example::
+
             BeeSQL insert - connection.insert('beesql_version', version='0.1', release_manager='Kasun Herath')
-            SQL - INSERT INTO beesql_version (version, release_manager) VALUES ('0.1', 'Kasun Herath') '''
+            SQL - INSERT INTO beesql_version (version, release_manager) VALUES ('0.1', 'Kasun Herath') """
 
         sql = "INSERT INTO %s (%s) VALUES (%s)" % (table, ', '.join([columnname for columnname in values.keys()]), ', '.join(['?' for columnname in values.values()]))
         escapes = tuple(values.values())
         self.query(sql, escapes)
 
     def update(self, table, updated_values, where=None, **where_conditions):
-        ''' Update table with provided updated values.
+        """ Update table with provided updated values.
+
         Arguments:
-            table: Table to be updated.
-            updated_values: A dictionary representing values to be updated.
-            where: Optional, where condition as a string.
-            where_conditions: Optional, condition pairs to contruct where conditional clause
+            :table (str): Table to be updated.
+            :updated_values: A dictionary representing values to be updated.
+            :where: Optional, where condition as a string.
+            :where_conditions: Optional, condition pairs to contruct where conditional clause
                               if where is not provided. 
 
-        Examples:
+        Raises:
+            BeeSQLDatabaseError.
+
+        Examples::
+
             updates = {'release_manager':'John Doe'}
 
             connection.update('beesql_version', updates, where="release_manager='John Smith' AND version > 2.0")
             sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith AND version > 2.0'
 
             connection.update('beesql_version', updates, release_manager='John Smith', release_year=2012)
-            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith' AND release_year=2012
-            '''
+            sql - UPDATE beesql_version SET release_manager='John Doe' WHERE release_manager='John Smith' AND release_year=2012 """
+
         if not type(updated_values) is dict:
             raise TypeError('updated_values should be of type dict')
         sql = 'UPDATE %s SET ' % (table) + ' , '.join([k + '=?' for k in updated_values.keys()])
@@ -170,18 +204,24 @@ class SQLITEConnection(BeeSQLBaseConnection):
         self.query(sql, tuple(escapes_list))
 
     def delete(self, table, where=None, **where_conditions):
-        ''' Delete values from table.
+        """ Delete values from table.
+
         Arguments:
-            table: Table to delete values from.
-            where: Optional, where condition as a string.
-            where_conditions: Optional, condition pairs to contruct where conditional clause,
+            :table: Table to delete values from.
+            :where: Optional, where condition as a string.
+            :where_conditions: Optional, condition pairs to contruct where conditional clause,
                               if where is not provided.
-        Examples:
+        Raises:
+            BeeSQLDatabaseError.
+
+        Examples::
+
             connection.delete('beesql_version', where="version < 2.0")
             sql - DELETE FROM beesql_version WHERE version < 2.0
 
             connection.delete('beesql_version', limit=2, version=2.0, release_name='bumblebee')
-            sql - DELETE FROM beesql_version WHERE version=2.0 and release_name='bumblebee' LIMIT 2 '''
+            sql - DELETE FROM beesql_version WHERE version=2.0 and release_name='bumblebee' LIMIT 2 """
+
         escapes = None
         sql = 'DELETE FROM %s' % (table)
         if where:
@@ -193,16 +233,24 @@ class SQLITEConnection(BeeSQLBaseConnection):
         self.query(sql, escapes)
 
     def tables(self):
-        ''' Return list of tables in current database. '''
+        """ Return list of tables in current database.
+
+        Raises:
+            BeeSQLDatabaseError """
         sql = "select name from sqlite_master where type = 'table'"
         table_dicts = self.query(sql)
         return [table_dict['name'] for table_dict in table_dicts]
 
     def drop_table(self, table, **kargs):
-        ''' Drop tables provided.
+        """ Drop tables provided.
+
         Arguments:
-            if_exists: Try dropping tables only if exists, used to prevent errors if a table does not exist.
-            table: Table to be deleted. '''
+            :if_exists (bool): Try dropping tables only if exists, used to prevent errors if a table does not exist.
+            :table (str): Table to be deleted. '''
+
+        Raises:
+            BeeSQLDatabaseError. """
+
         if 'if_exists' in kargs and kargs['if_exists']:
             sql = "DROP TABLE IF EXISTS "
         else:
