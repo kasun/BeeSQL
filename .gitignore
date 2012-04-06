@@ -1,3 +1,4 @@
 *.pyc
 tests/settings.py
 build/
+docs/_build
