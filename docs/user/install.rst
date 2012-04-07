@@ -8,7 +8,7 @@ Getting the Code
 
 Source code of BeeSQL can be cloned using::
     
-    git clone git@github.com:kasun/BeeSQL.git
+    git clone git://github.com/kasun/BeeSQL.git
 
 Installing using source
 -----------------------
