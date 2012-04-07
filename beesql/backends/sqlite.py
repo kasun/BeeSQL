@@ -174,7 +174,7 @@ class SQLITEConnection(BeeSQLBaseConnection):
 
         Arguments:
             :table (str): Table to be updated.
-            :updated_values: A dictionary representing values to be updated.
+            :updated_values: A dict representing values to be updated.
             :where: Optional, where condition as a string.
             :where_conditions: Optional, condition pairs to contruct where conditional clause
                               if where is not provided. 
@@ -207,7 +207,7 @@ class SQLITEConnection(BeeSQLBaseConnection):
         """ Delete values from table.
 
         Arguments:
-            :table: Table to delete values from.
+            :table (str): Table to delete values from.
             :where: Optional, where condition as a string.
             :where_conditions: Optional, condition pairs to contruct where conditional clause,
                               if where is not provided.
@@ -274,5 +274,5 @@ class SQLITEConnection(BeeSQLBaseConnection):
         return self.last_escapes
 
     def close(self):
-        ''' Close connection to Databaes. '''
+        ''' Close connection to Database. '''
         self.db_connection.close()

@@ -180,10 +180,10 @@ class MYSQLConnection(BeeSQLBaseConnection):
         ''' Update table with provided updated values.
 
         Arguments:
-            :table: Table to be updated.
-            :updated_values: A dictionary representing values to be updated.
+            :table (str): Table to be updated.
+            :updated_values: A dict representing values to be updated.
             :where: Optional, where condition as a string.
-            :limit: Optional, used to limit the number of rows to be updated.
+            :limit (int): Optional, used to limit the number of rows to be updated.
             :where_conditions: Optional, condition pairs to contruct where conditional clause
                               if where is not provided. 
 
@@ -346,5 +346,5 @@ class MYSQLConnection(BeeSQLBaseConnection):
         return self.last_escapes
 
     def close(self):
-        ''' Close connection to Databaes. '''
+        ''' Close connection to Database. '''
         self.db_connection.close()

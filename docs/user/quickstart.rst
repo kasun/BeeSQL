@@ -18,12 +18,12 @@ Common operations
     
     db = beesql.connection(engine='engine', username='user', password='pass', db='database')
 
-The engine should be one of supported engines, it defaults to ``mysql``. For MySQL username and password should be provided and database can be provided with ``db``. For SQLite only ``db`` should be provided and it should be the filepath to the database file or special value ``:memory:`` to create the database in memory.
+The engine should be one of supported engines, it defaults to ``mysql``. For MySQL, username and password should be provided and database can be provided with ``db``. For SQLite only ``db`` should be provided and it should be the filepath to the database file or special value ``:memory:`` to create the database in memory.
 
     - ``db = beesql.connection(username='root', password='rootpass', db='beesql')``
     - ``db = beesql.connection(engine='sqlite', db='beesql.db')``
 
-The first statement Would return a mysql connection connected to database ``beesql`` using username ``root`` and password ``rootpass`` while the second statement would return a sqlite connection using ``beesql.db`` as the database file. For a list of all available options have a refer the API.
+The first statement Would return a mysql connection connected to database ``beesql`` using username ``root`` and password ``rootpass`` while the second statement would return a sqlite connection using ``beesql.db`` as the database file. For a list of all available options please refer the API.
 
 **Executing a SQL statement**::
 
@@ -70,9 +70,9 @@ SQLite example::
 
     versions = db.select('beesql_version', 'version', 'release_date', release_manager='John Doe')
 
-The above would return all rows with columns ``version`` and ``release_date`` where release_manager is ``John Doe``
+The above would return all rows with columns ``version`` and ``release_date`` from ``beesql_version`` where release_manager is ``John Doe``
 
-For all options :func:`select` supports refer the API.
+For all options :func:`select` supports please refer the API.
 
 **Retrieve a single row**::
 
@@ -93,13 +93,13 @@ The above would insert a row into ``beesql_version`` with ``0.1`` as ``version``
     updated_values = {'release_manager': 'John Smith'}
     db.update('beesql_version', updated_values, release_manager='John Doe', release_year=2012)
 
-The SQL equivalent of above statement is ``UPDATE beesql_version SET release_manager='John Smith' WHERE release_manager='John Doe' AND release_year=2012``. Alternatively the where condition can be supplied as a string. For all option which :func:`update` support refer the API. 
+The SQL equivalent of above statement is ``UPDATE beesql_version SET release_manager='John Smith' WHERE release_manager='John Doe' AND release_year=2012``. Alternatively the where condition can be supplied as a string. For all options which :func:`update` supports please refer the API. 
 
 **Delete statement**::
 
     db.delete('beesql_version', version=2.0, release_name='bumblebee')
 
-The SQL equivalent of above statement is ``DELETE FROM beesql_version WHERE version=2.0 AND release_name='bumblebee'``. Alternatively the where condition can be provided as a string. For all option which :func:`delete` support refer the API.
+The SQL equivalent of above statement is ``DELETE FROM beesql_version WHERE version=2.0 AND release_name='bumblebee'``. Alternatively the where condition can be provided as a string. For all options which :func:`delete` supports please refer the API.
 
 **Closing a connection**::
 
@@ -124,7 +124,7 @@ MySQL connections additionally support following functions.
 
     db.drop_table('table1', 'table2', if_exists=True)
 
-MySQL :func:`drop_table` accepts a variable number of tables to be dropped.
+MySQL :func:`drop_table` accepts a variable number of table names to be dropped.
 
 **Use a database**::
 
