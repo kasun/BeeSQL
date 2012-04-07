@@ -47,7 +47,7 @@ class SQLITEConnection(BeeSQLBaseConnection):
         try:
             self.last_sql = sql
             self.last_escapes = escapes
-            return self.run_query(sql, escapes)
+            return self._run_query(sql, escapes)
         except sqlite3.OperationalError, oe:
             raise BeeSQLDatabaseError(str(oe))
 

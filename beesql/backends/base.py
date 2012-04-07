@@ -10,7 +10,7 @@ class BeeSQLBaseConnection(object):
     def __init__(self):
         self.transaction = False
    
-    def run_query(self, sql, escapes=None):
+    def _run_query(self, sql, escapes=None):
         ''' Run provided query using implemented class's DB Cursor. Use Escape values if provided. ''' 
         if not escapes:
             self.cursor.execute(sql)

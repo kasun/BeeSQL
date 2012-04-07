@@ -45,7 +45,7 @@ class MYSQLConnection(BeeSQLBaseConnection):
         try:
             self.last_sql = sql
             self.last_escapes = escapes
-            return self.run_query(sql, escapes)
+            return self._run_query(sql, escapes)
         except pymysql.err.DatabaseError, de:
             raise BeeSQLDatabaseError(str(de))
 
