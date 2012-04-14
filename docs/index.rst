@@ -9,7 +9,7 @@ BeeSQL: Pythonic SQL Library!
 Introduction
 ------------
 
-BeeSQL is a Pythonic SQL Wrapper that helps;
+BeeSQL is a simple Pythonic SQL Wrapper that helps;
 
 - Minimize boring repetitive steps in Python DB-API.
 - Write less SQL.

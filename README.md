@@ -1,6 +1,6 @@
 # BeeSQL - Pythonic SQL Library #
 
-BeeSQL is a Pythonic SQL wrapper library that helps,
+BeeSQL is a simple Pythonic SQL wrapper library that helps,
 
 + Minimize boring repetitive steps in Python DB-API.
 + Write less SQL.
