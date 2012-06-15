@@ -80,13 +80,13 @@ For all options :func:`select` supports please refer the API.
 
 The above would retrieve a single row from ``beesql_version`` where ``release_manager`` is ``John Doe``. Alternatively the where condition can be supplied as a string::
     
-    row = db.get(''beesql_version', where="release_manager='John Doe'")
+    row = db.get('beesql_version', where="release_manager='John Doe'")
 
 **Insert statement**::
 
     db.insert('beesql_version', version='0.1', release_manager='John Doe')
 
-The above would insert a row into ``beesql_version`` with ``0.1`` as ``version``` and ``John Doe`` as ``release_manager``.
+The above would insert a row into ``beesql_version`` with ``0.1`` as ``version`` and ``John Doe`` as ``release_manager``.
 
 **Update statement**::
 
@@ -107,7 +107,7 @@ The SQL equivalent of above statement is ``DELETE FROM beesql_version WHERE vers
 
 **Attributes of connections**::
 
-    db.lastrowid - Insert ID of last statment if last statement was an insert.
+    db.lastrowid - Insert ID of last statement if last statement was an insert.
     db.lastsql - Generated SQL for last run statement.
     db.lastescapes - Escape values used for last run statement.
 
